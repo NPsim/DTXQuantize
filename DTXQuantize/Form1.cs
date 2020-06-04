@@ -208,11 +208,15 @@ namespace DTXQuantize {
             string Message = string.Join(
                 Environment.NewLine,
                 "Select a click track audio file.",
-                "Best used with 'WAV (Microsoft) signed 16bit PCM' at any Sample Rate.",
-                "Untested with other audio formats",
+                "",
+                "Tested settings",
+                "Format: WAV (Microsoft) signed 16bit PCM",
+                "Sample Rate: 44100Hz",
+                "Clicks: Audacity's Rhythm Track Generator using 'Ping (short)'",
+                "MIDI Pitches: 80 High, 80 Low",
                 "",
                 "More information at Help below"
-            );
+            ); ;
             MessageBox.Show(
                 Message,
                 "Load Click Track",
