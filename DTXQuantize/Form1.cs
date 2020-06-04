@@ -67,7 +67,7 @@ namespace DTXQuantize {
             List<double> BeatList = new List<double>();
             double Threshold = double.Parse(ThresholdTextBox.Text);
             Double PreviousBeatTime = -1;
-            for(int SampleIndex = 0; SampleIndex < AmplitudeList.Count; SampleIndex++) {
+            for (int SampleIndex = 0; SampleIndex < AmplitudeList.Count; SampleIndex++) {
                 float Amplitude = AmplitudeList[SampleIndex];
 
                 // Find first beat
@@ -88,7 +88,7 @@ namespace DTXQuantize {
         private List<double> GenerateBPMList(List<double> BeatList) {
             int BPMRound = int.Parse(BPMRoundTextBox.Text);
             List<Double> BPMList = new List<double>();
-            for(int BeatIndex = 0; BeatIndex < BeatList.Count - 1; BeatIndex++) {
+            for (int BeatIndex = 0; BeatIndex < BeatList.Count - 1; BeatIndex++) {
                 double PeriodToNextBeat = BeatList[BeatIndex + 1] - BeatList[BeatIndex];
                 BPMList.Add(ExtendedDoubleRound(PeriodSecondToBPM(PeriodToNextBeat), BPMRound));
             }
@@ -170,7 +170,7 @@ namespace DTXQuantize {
 
                 while (SamplesRead != 0) {
                     SamplesRead = Wave.Read(Buffer, 0, 1024);
-                    foreach(float Amplitude in Buffer) {
+                    foreach (float Amplitude in Buffer) {
                         AmplitudeList.Add(Amplitude);
                     }
                 }
@@ -215,12 +215,12 @@ namespace DTXQuantize {
             );
             MessageBox.Show(
                 Message,
-                "Amplitude Threshold",
+                "Load Click Track",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information,
                 MessageBoxDefaultButton.Button1,
                 0,
-                "https://google.com"
+                "https://github.com/NPsim/DTXQuantize/wiki/Loading-a-Click-Track"
             );
         }
 
@@ -240,7 +240,7 @@ namespace DTXQuantize {
                 MessageBoxIcon.Information,
                 MessageBoxDefaultButton.Button1,
                 0,
-                "https://google.com"
+                "https://github.com/NPsim/DTXQuantize/wiki/Amplitude-Threshold"
             );
         }
 
@@ -255,12 +255,12 @@ namespace DTXQuantize {
             );
             MessageBox.Show(
                 Message,
-                "Amplitude Threshold",
+                "Beats per Bar",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information,
                 MessageBoxDefaultButton.Button1,
                 0,
-                "https://google.com"
+                "https://github.com/NPsim/DTXQuantize/wiki/Beats-per-Bar"
             );
         }
 
@@ -276,12 +276,12 @@ namespace DTXQuantize {
             );
             MessageBox.Show(
                 Message,
-                "Amplitude Threshold",
+                "Round BPM",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information,
                 MessageBoxDefaultButton.Button1,
                 0,
-                "https://google.com"
+                "https://github.com/NPsim/DTXQuantize/wiki/Round-BPM"
             );
         }
 
@@ -296,12 +296,12 @@ namespace DTXQuantize {
             );
             MessageBox.Show(
                 Message,
-                "Amplitude Threshold",
+                "Beat Offset",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information,
                 MessageBoxDefaultButton.Button1,
                 0,
-                "https://google.com"
+                "https://github.com/NPsim/DTXQuantize/wiki/Beat-Offset"
             );
         }
 
@@ -317,12 +317,12 @@ namespace DTXQuantize {
             );
             MessageBox.Show(
                 Message,
-                "Amplitude Threshold",
+                "Click Length",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information,
                 MessageBoxDefaultButton.Button1,
                 0,
-                "https://google.com"
+                "https://github.com/NPsim/DTXQuantize/wiki/Click-Length"
             );
         }
     }
