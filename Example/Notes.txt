@@ -1,1 +1,3 @@
+Generated using only default settings in Audacity and DTXQuantize
+
 Credit to https://www.youtube.com/watch?v=qPuA6JkeVIg for this example
