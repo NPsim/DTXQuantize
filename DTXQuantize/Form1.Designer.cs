@@ -196,7 +196,7 @@
             this.BeatOffsetTextBox.Name = "BeatOffsetTextBox";
             this.BeatOffsetTextBox.Size = new System.Drawing.Size(151, 20);
             this.BeatOffsetTextBox.TabIndex = 15;
-            this.BeatOffsetTextBox.Text = "-5";
+            this.BeatOffsetTextBox.Text = "0";
             this.BeatOffsetTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // BeatOffsetLabel
@@ -233,17 +233,17 @@
             this.BPMRoundTextBox.Name = "BPMRoundTextBox";
             this.BPMRoundTextBox.Size = new System.Drawing.Size(175, 20);
             this.BPMRoundTextBox.TabIndex = 19;
-            this.BPMRoundTextBox.Text = "3";
+            this.BPMRoundTextBox.Text = "0.05";
             this.BPMRoundTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // BPMRoundLabel
             // 
             this.BPMRoundLabel.AutoSize = true;
-            this.BPMRoundLabel.Location = new System.Drawing.Point(56, 93);
+            this.BPMRoundLabel.Location = new System.Drawing.Point(17, 93);
             this.BPMRoundLabel.Name = "BPMRoundLabel";
-            this.BPMRoundLabel.Size = new System.Drawing.Size(65, 13);
+            this.BPMRoundLabel.Size = new System.Drawing.Size(104, 13);
             this.BPMRoundLabel.TabIndex = 18;
-            this.BPMRoundLabel.Text = "Round BPM";
+            this.BPMRoundLabel.Text = "Round BPM Multiple";
             // 
             // ConsoleRichBox
             // 
@@ -286,7 +286,7 @@
             this.MaximumSize = new System.Drawing.Size(359, 374);
             this.MinimumSize = new System.Drawing.Size(359, 374);
             this.Name = "Form1";
-            this.Text = "DTXQuantize 1.0";
+            this.Text = "DTXQuantize 1.1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
@@ -13,7 +14,7 @@ namespace DTXQuantize {
         }
 
         private void Form1_Load(object sender, EventArgs e) {
-            WriteConsoleLine("DTXQuantize 1.0 Loaded");
+            WriteConsoleLine(this.Text + " Loaded");
         }
 
         private void WriteConsoleLine(string Text, string Prefix = "") {
@@ -45,9 +46,16 @@ namespace DTXQuantize {
             return 60 / Period;
         }
 
+        private double RoundToMultiple(double Value, double Multiple) {
+            double Multiplier = Math.Round(Value / Multiple);
+            return Multiple * Multiplier;
+        }
+
+        // Deprecated
         // Extends double rounding to place values left of the decimal
         private double ExtendedDoubleRound(double Value, int Digits) { // Digits = 2 rounds to 0.01, Digits = -2 rounds to 10
             if (Digits >= 0) {
+                //return RoundToMultiple(Value, 0.05); // 0.06 BPM = exactly 1ms period
                 return Math.Round(Value, Digits);
             }
             else {
@@ -63,10 +71,36 @@ namespace DTXQuantize {
             return Time >= 0 ? Time : 0;
         }
 
+        private List<int> GenerateBeatSampleList(List<float> AmplitudeList, WaveFormat Format) {
+            List<int> BeatSampleList = new List<int>();
+            double Threshold = double.Parse(ThresholdTextBox.Text);
+            for (int SampleIndex = 0; SampleIndex < AmplitudeList.Count; SampleIndex++) {
+                float Amplitude = AmplitudeList[SampleIndex];
+
+                if (Amplitude >= Threshold) {
+                    BeatSampleList.Add(SampleIndex);
+                    SampleIndex += (int)Math.Round(Format.SampleRate * double.Parse(SampleLengthTextBox.Text) / 1000000); // Jump ahead click length
+                }
+            }
+            return BeatSampleList;
+        }
+
+        private List<double> GenerateBPMListFromSamples(List<int> BeatSampleList, WaveFormat Format) {
+            List<double> BPMList = new List<double>();
+            double BPMRound = double.Parse(BPMRoundTextBox.Text);
+            for (int BeatIndex = 0; BeatIndex < BeatSampleList.Count - 1; BeatIndex++) {
+                int SamplesToNextBeat = BeatSampleList[BeatIndex + 1] - BeatSampleList[BeatIndex];
+                double PeriodToNextBeat = SampleIndexToSeekTime(SamplesToNextBeat, Format.SampleRate);
+                BPMList.Add(RoundToMultiple(PeriodSecondToBPM(PeriodToNextBeat), BPMRound));
+            }
+            return BPMList;
+        }
+
+        // Deprecated
         private List<double> GenerateBeatList(List<float> AmplitudeList, WaveFormat Format) {
             List<double> BeatList = new List<double>();
             double Threshold = double.Parse(ThresholdTextBox.Text);
-            Double PreviousBeatTime = -1;
+            double PreviousBeatTime = -1;
             for (int SampleIndex = 0; SampleIndex < AmplitudeList.Count; SampleIndex++) {
                 float Amplitude = AmplitudeList[SampleIndex];
 
@@ -75,7 +109,6 @@ namespace DTXQuantize {
                     double SampleBeatTime = SampleIndexToSeekTime(SampleIndex, Format.SampleRate);
                     if (PreviousBeatTime > 0) {
                         BeatList.Add(SampleBeatTime);
-                        int SamplesToJump = (int)Math.Ceiling(Format.SampleRate * double.Parse(SampleLengthTextBox.Text) / 1000000);
                         SampleIndex += (int)Math.Ceiling(Format.SampleRate * double.Parse(SampleLengthTextBox.Text) / 1000000); // Jump ahead click length
                     }
                     PreviousBeatTime = SampleBeatTime;
@@ -85,12 +118,13 @@ namespace DTXQuantize {
             return BeatList;
         }
 
+        // Deprecated
         private List<double> GenerateBPMList(List<double> BeatList) {
-            int BPMRound = int.Parse(BPMRoundTextBox.Text);
-            List<Double> BPMList = new List<double>();
+            double BPMRound = double.Parse(BPMRoundTextBox.Text);
+            List<double> BPMList = new List<double>();
             for (int BeatIndex = 0; BeatIndex < BeatList.Count - 1; BeatIndex++) {
                 double PeriodToNextBeat = BeatList[BeatIndex + 1] - BeatList[BeatIndex];
-                BPMList.Add(ExtendedDoubleRound(PeriodSecondToBPM(PeriodToNextBeat), BPMRound));
+                BPMList.Add(RoundToMultiple(PeriodSecondToBPM(PeriodToNextBeat), BPMRound));
             }
             return BPMList;
         }
@@ -176,10 +210,16 @@ namespace DTXQuantize {
                 }
 
                 // Generate Beat Time List
-                List<double> BeatList = GenerateBeatList(AmplitudeList, Wave.WaveFormat);
+                //List<double> BeatList = GenerateBeatList(AmplitudeList, Wave.WaveFormat);
 
                 // Generate BPM List
-                List<double> BPMList = GenerateBPMList(BeatList);
+                //List<double> BPMList = GenerateBPMList(BeatList);
+
+                // Generate Beat Sample Index List
+                List<int> BeatSampleIndexList = GenerateBeatSampleList(AmplitudeList, Wave.WaveFormat);
+
+                // Generate BPM List from Beat Indexes
+                List<double> BPMList = GenerateBPMListFromSamples(BeatSampleIndexList, Wave.WaveFormat);
 
                 // Generate DTX Simfile
                 DTXSimFile SimFile = new DTXSimFile {
@@ -271,10 +311,9 @@ namespace DTXQuantize {
         private void BPMRoundHint_Click(object sender, EventArgs e) { // Round BPM
             string Message = string.Join(
                 Environment.NewLine,
-                "Specify how precise each BPM chip's value is",
-                "Value must be a whole number less than or equal to 15",
-                "Value may be negative to round left side of decimal",
-                "Default: 3",
+                "Forces BPM chips to be rounded to the nearest multiple of the given value",
+                "Value can be any number greater than 0",
+                "Default: 0.05",
                 "",
                 "More information at Help below"
             );
@@ -285,7 +324,7 @@ namespace DTXQuantize {
                 MessageBoxIcon.Information,
                 MessageBoxDefaultButton.Button1,
                 0,
-                "https://github.com/NPsim/DTXQuantize/wiki/Round-BPM"
+                "https://github.com/NPsim/DTXQuantize/wiki/Round-BPM-Multiple"
             );
         }
 
@@ -294,7 +333,7 @@ namespace DTXQuantize {
                 Environment.NewLine,
                 "Value offsets beat markers in milliseconds",
                 "Value must be a number, accepts decimals",
-                "Default: -5",
+                "Default: 0",
                 "",
                 "More information at Help below"
             );
